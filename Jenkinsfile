@@ -35,9 +35,7 @@ pipeline {
     
     post {
         always {
-            node {
-                cleanWs() // Clean workspace within a node block
-            }
+            cleanWs() // Clean workspace without using a node block
         }
     }
 }
