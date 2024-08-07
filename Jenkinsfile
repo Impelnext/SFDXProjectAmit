@@ -2,7 +2,7 @@ pipeline {
     agent any // Use any available Jenkins agent
     
     environment {
-        JWT_KEY_FILE = credentials('jwt_key_file') // Assumes a Jenkins credential ID named 'jwt_key_file'
+        JWT_KEY_FILE = credentials('16dac807-3c9e-4e29-84af-526ab4a3e0ac') // Updated Jenkins credential ID
     }
     
     stages {
@@ -35,7 +35,9 @@ pipeline {
     
     post {
         always {
-            cleanWs() // Clean workspace without using a node block
+            node {
+                cleanWs() // Clean workspace within a node block
+            }
         }
     }
 }
