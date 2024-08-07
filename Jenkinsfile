@@ -1,47 +1,46 @@
-#!groovy
-import groovy.json.JsonSlurperClassic
-
-node {
-
-    def BUILD_NUMBER = env.BUILD_NUMBER
-    def SFDC_USERNAME = env.SFDC_USERNAME
-    def HUB_ORG = env.HUB_ORG_DH
-    def SFDC_HOST = env.SFDC_HOST_DH
-    def JWT_KEY_CRED_ID = env.JWT_CRED_ID_DH
-    def CONNECTED_APP_CONSUMER_KEY = env.CONNECTED_APP_CONSUMER_KEY_DH
-
-    println 'KEY IS'
-    println JWT_KEY_CRED_ID
-    println HUB_ORG
-    println SFDC_HOST
-    println CONNECTED_APP_CONSUMER_KEY
+pipeline {
+    agent any
     
-    // Specify the correct path to the Salesforce CLI tool
-    def toolbelt = "C:\\Program Files\\sf\\bin\\sf.cmd"
-
-    stage('checkout source') {
-        checkout scm
+    environment {
+        // Add your credentials and org-specific details here
+        CLIENT_ID = '3MVG9fe4g9fhX0E5LtKVD2LmourXdGJM23GOJgTC.3naYqPKtmgHdIXvfVw3B3KLgUnHFL9B9tfXwC7w2c6PP'
+        USERNAME = 'babanpawar7387@gmail.com'
+        INSTANCE_URL = 'https://login.salesforce.com'
+        JWT_KEY_FILE = credentials('jwt_key_file') // Assumes a Jenkins credential ID named 'jwt_key_file'
+        TARGET_ORG_ID = '00D5g00000A4uMYEAZ'
     }
-
-withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
-    stage('Deploy Code') {
-        if (isUnix()) {
-            rc = sh returnStatus: true, script: "${toolbelt} force:auth:jwt:grant --client-id ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwt-key-file ${jwt_key_file} --set-default-dev-hub --instance-url ${SFDC_HOST}"
-        } else {
-            rc = bat returnStatus: true, script: "\"${toolbelt}\" force:auth:jwt:grant --client-id ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwt-key-file \"${jwt_key_file}\" --set-default-dev-hub --instance-url ${SFDC_HOST}"
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
-        if (rc != 0) { error 'hub org authorization failed' }
-
-        println rc
-
-        // Updated command for deployment
-        if (isUnix()) {
-            rmsg = sh returnStdout: true, script: "${toolbelt} project deploy start -d manifest/ -u ${HUB_ORG}"
-        } else {
-            rmsg = bat returnStdout: true, script: "\"${toolbelt}\" project deploy start -d manifest/ -u ${HUB_ORG}"
+        
+        stage('Authorize Salesforce') {
+            steps {
+                script {
+                    bat """
+                    "C:\\Program Files\\sf\\bin\\sf.cmd" force:auth:jwt:grant --client-id ${CLIENT_ID} --username ${USERNAME} --jwt-key-file ${JWT_KEY_FILE} --set-default-dev-hub --instance-url ${INSTANCE_URL}
+                    """
+                }
+            }
         }
-
-        println rmsg
+        
+        stage('Deploy Code') {
+            steps {
+                script {
+                    bat """
+                    "C:\\Program Files\\sf\\bin\\sf.cmd" project deploy start -d manifest/ --target-org ${TARGET_ORG_ID}
+                    """
+                }
+            }
+        }
     }
+    
+    post {
+        always {
+            cleanWs()
+        }
     }
 }
