@@ -1,6 +1,6 @@
 pipeline {
-    agent any // This specifies that any available Jenkins agent can be used. Replace 'any' with a specific label if needed.
-
+    agent any // Use any available Jenkins agent
+    
     environment {
         JWT_KEY_FILE = credentials('jwt_key_file') // Assumes a Jenkins credential ID named 'jwt_key_file'
     }
@@ -35,7 +35,9 @@ pipeline {
     
     post {
         always {
-            cleanWs() // Cleans up the workspace after the pipeline run
+            node {
+                cleanWs() // Clean workspace within a node block
+            }
         }
     }
 }
