@@ -23,17 +23,4 @@ pipeline {
         stage('Deploy Code') {
             steps {
                 bat """
-                "C:\\Program Files\\sf\\bin\\sf.cmd" project deploy start -d manifest/ --target-org 00D5g00000A4uMYEAZ
-                """
-            }
-        }
-    }
-    
-    post {
-        always {
-            node {
-                cleanWs() // Cleans up the workspace after the pipeline run
-            }
-        }
-    }
-}
+                "C:\\Progra
