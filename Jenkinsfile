@@ -36,9 +36,9 @@ withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]
 
         // Updated command for deployment
         if (isUnix()) {
-            rmsg = sh returnStdout: true, script: "${toolbelt} force:project:deploy:start -d manifest/. -u ${HUB_ORG}"
+            rmsg = sh returnStdout: true, script: "${toolbelt} project deploy start -d manifest/ -u ${HUB_ORG}"
         } else {
-            rmsg = bat returnStdout: true, script: "\"${toolbelt}\" force:project:deploy:start -d manifest/. -u ${HUB_ORG}"
+            rmsg = bat returnStdout: true, script: "\"${toolbelt}\" project deploy start -d manifest/ -u ${HUB_ORG}"
         }
 
         println rmsg
