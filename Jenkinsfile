@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent any // You can specify a label here if needed, e.g., agent { label 'my-agent' }
     
     environment {
         JWT_KEY_FILE = credentials('jwt_key_file') // Assumes a Jenkins credential ID named 'jwt_key_file'
