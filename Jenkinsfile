@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     bat """
-                    "C:\\Program Files\\sf\\bin\\sf.cmd" project deploy start -d manifest/ --target-org 00D5g00000A4uMYEAZ
+                    "C:\\Program Files\\sf\\bin\\sf.cmd" project deploy start -d manifest/ --target-org babanpawar7387@gmail.com || exit /b %ERRORLEVEL%
                     """
                 }
             }
@@ -35,7 +35,7 @@ pipeline {
     
     post {
         always {
-            cleanWs() // Clean workspace without using a node block
+            cleanWs() // Clean workspace
         }
     }
 }
